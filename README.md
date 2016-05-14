@@ -1,4 +1,4 @@
-# Nitrogen plugin to allow you to visually view visitors & browsers used for a  for [Nitrogen Web Framework Project](http://nitrogenproject.com).
+# Nitrogen plugin to allow you to visually view visitors & browsers used for a [Nitrogen Web Framework Project](http://nitrogenproject.com).
 
 A means by which to either show a map based on IP lookups where the visitors for a site are via `#element_map{}`. Or a means by which to see which browser family is most commonly used on your pages using `#elemenent_ua{}`.
 
@@ -13,7 +13,7 @@ You install it as a rebar dependency by adding the following in the deps section
 {nitrogen_user_map, "", {git, "git://github.com/stuart-thackray/nitrogen_user_map.git", {branch, master}}
 ```
 
-You need to start the application in etc/vm.args to store the information. It is stored in memory via dictionary and state information. 
+You need to start the application in etc/vm.args in order for the information to be stored. It is stored in memory via dictionary and state information (non-persistant). 
 
 ```erlang
 -eval "application:start(nitrogen_user_map)"
@@ -24,6 +24,7 @@ You need to start the application in etc/vm.args to store the information. It is
 
 Run `make` in your Application. 
 
+**It doesn't currently work nicely with inets and maybe other webservers** Using YAWS is safe. ( I beleive due to the CSS/JS/others files not being returned with markup information.
 
 ## Usage
 
