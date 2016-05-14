@@ -1,0 +1,1 @@
+-define(CALL_NUM_API, num_api:call() ).

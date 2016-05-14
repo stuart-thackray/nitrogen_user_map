@@ -1,0 +1,12 @@
+{application, nitrogen_user_map,
+ [
+  {description, "Nitrogen Visitors Map"},
+  {vsn, "0.0.1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { nitrogen_user_map_app, []}},
+  {env, []}
+ ]}.
