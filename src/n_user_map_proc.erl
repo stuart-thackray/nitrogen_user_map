@@ -11,6 +11,7 @@
 -export([start_link/0,
          init/1,
 		 record_call/2,
+		 record_call/3,
 		 load_test_data/0,
 		 get_render_info/0,
 		get_browser_info/0,
@@ -47,6 +48,9 @@ load_test_data() ->
 start_link() ->
     proc_lib:start_link(?MODULE, init, [self()]).
 
+
+record_call(Node, IP, Headers) ->
+	{?MODULE, Node} ! {add, IP, Headers}.
 
 record_call(IP, Headers) ->
 	?MODULE ! {add, IP, Headers}.

@@ -24,12 +24,15 @@ You need to start the application in etc/vm.args in order for the information to
 
 Run `make` in your Application. 
 
-**It doesn't currently work nicely with inets and maybe other webservers** Using YAWS is safe. ( I beleive due to the CSS/JS/others files not being returned with markup information.
 
 ## Usage
 
-You use it by calling the following in any page that you wish to record.
+You use it by calling the following in any page that you wish to record. 
 ```erlang
+num_api:call(<NODE>).
+
+OR
+
 num_api:call().
 ```
 

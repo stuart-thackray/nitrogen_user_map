@@ -7,7 +7,9 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([call/0]).
+-export([call/1,
+		 call/0
+		]).
 
 
 
@@ -22,6 +24,20 @@ call() ->
 		IP = wf:peer_ip(),
 		Headers = wf:headers(),
 		n_user_map_proc:record_call(IP, Headers)
+	catch
+		_:_ ->
+			%DON'T CRASH CALLING PROCESS FOR ANY REASON
+			error_logger:error_msg("~p ~p", [?MODULE, erlang:get_stacktrace()]),
+			ok
+	end.
+
+
+
+call(Node) ->
+	try
+		IP = wf:peer_ip(),
+		Headers = wf:headers(),
+		n_user_map_proc:record_call(Node, IP, Headers)
 	catch
 		_:_ ->
 			%DON'T CRASH CALLING PROCESS FOR ANY REASON
