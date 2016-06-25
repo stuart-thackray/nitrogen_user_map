@@ -1,6 +1,6 @@
 # Nitrogen plugin to allow you to visually view visitors & browsers used for a [Nitrogen Web Framework Project](http://nitrogenproject.com).
 
-A means by which to either show a map based on IP lookups where the visitors for a site are via `#element_map{}`. Or a means by which to see which browser family is most commonly used on your pages using `#elemenent_ua{}`.
+A means by which to either show a map based on IP lookups where the visitors for a site are via `#element_map{}`. Or a means by which to see which browser family is most commonly used on your pages using `#elemenent_ua{}`, `#element_device_type{}` operating sytems information, `#element_dt{}` device type information and raw information regarding the currently connected ports `#element_currently_connected{}`.
 
 ![Screenshot]
 (https://github.com/stuart-thackray/nitrogen_user_map/blob/master/doc/screenshot.jpg)
@@ -10,7 +10,7 @@ A means by which to either show a map based on IP lookups where the visitors for
 You install it as a rebar dependency by adding the following in the deps section of rebar.config
 
 ```erlang
-{nitrogen_user_map, "", {git, "git://github.com/stuart-thackray/nitrogen_user_map.git", {branch, master}}
+    {nitrogen_user_map,  {git, "git://github.com/stuart-thackray/nitrogen_user_map.git", {branch, master}}}
 ```
 
 You need to start the application in etc/vm.args in order for the information to be stored. It is stored in memory via dictionary and state information (non-persistant). 
@@ -19,6 +19,7 @@ You need to start the application in etc/vm.args in order for the information to
 -eval "application:start(nitrogen_user_map)"
 ```
 
+The information regarding current connections is based on the ports open and connected (only currently tested with inets).
 
 ### Using Nitrogen's built-in plugin installer (Requires Nitrogen 2.2.0)
 
@@ -61,5 +62,8 @@ Listed in no specific order
 
 ## TODO
 - [x] Get to work
-- [ ] Improve coding and add additional functionality.
+- [x] Added Operating system Graph
+- [x] Device type (computer/tablet/etc)
+- [x] Raw information based on connections reported by runtime.
+- [ ] Make code readable
 

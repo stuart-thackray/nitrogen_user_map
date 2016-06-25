@@ -8,8 +8,17 @@
 main() -> #template { file="./site/templates/plugins/nitrogen_user_map/nitrogen_user_map_demo.html" }.
 
 
+loop() ->
+    receive after 5000 -> void end,
+    wf:replace(curr_connected, #panel{id = curr_connected, body =#element_connected{}}),
+    error_logger:info_msg("loopy"),
+    wf:flush(),
+    loop().
+
+
 body() ->  
 	num_api:call(), 
+    wf:comet(fun ()-> loop()  end),
 %% error_logger:info_msg("Headers:~p", [wf:headers()]),
      [
 		#panel{class = "row",
@@ -29,7 +38,25 @@ body() ->
 					   body = [#element_ua{}]
 					  }
 					  ]
-			  }
+			  },
+        #panel{class = "row",
+               body = [
+                                #panel{class = "col-md-4",
+                       body = [#element_os{}  ]
+                      },
+                                #panel{class = "col-md-4",
+                                       body = [
+                                               #element_dt{}
+                                               ]},
+                                #panel{class = "col-md-4",
+                                       body = [
+                                               #panel{id = curr_connected, body =#element_connected{id = curr_connected}}
+                                               ]}
+                      
+                      ]
+              }
+            
+               
 
 
     ].

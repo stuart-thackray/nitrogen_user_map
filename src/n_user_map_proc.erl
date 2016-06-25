@@ -15,12 +15,16 @@
 		 load_test_data/0,
 		 get_render_info/0,
 		get_browser_info/0,
+         get_browser_type/0,
+         get_browser_os/0,
          stop/0 
 		]).
 
 -record(state, { 
                  ppid,
-				 browsers = []
+				 browsers = [],
+                 type = [],
+                 os = [] 
                 }).
 
 
@@ -64,6 +68,25 @@ get_render_info() ->
 			Elements
 	end.
 
+get_browser_os() ->
+    From =self(),
+    Ref = make_ref(),
+    ?MODULE ! {'browser_os', From, Ref},
+    receive 
+        {Ref, Answer} ->
+            Answer
+    end.   
+
+get_browser_type() ->
+     From =self(),
+    Ref = make_ref(),
+    ?MODULE ! {'browser_type', From, Ref},
+    receive 
+        {Ref, Answer} ->
+            Answer
+    end.   
+   
+    
 get_browser_info() ->
 	From =self(),
 	Ref = make_ref(),
@@ -121,6 +144,14 @@ process_msg({'renderinfo', From, Ref}, State) ->
 		   }},
 	State;
 
+process_msg({'browser_os', From, Ref},State) ->
+    From ! {Ref, State#state.os},
+    State;
+
+process_msg({'browser_type', From, Ref},State) ->
+    From ! {Ref, State#state.type},
+    State;
+
 process_msg({'browser_info', From, Ref},State) ->
 	From ! {Ref, State#state.browsers},
 	State;
@@ -169,20 +200,21 @@ record_headers([], State) ->
 record_headers(Header, State) ->
 	UA = proplists:get_value(<<"user-agent">>, Header, []),
 	case  useragent:parse(UA) of
-		[{browser, OPT}|_] ->
-			{Key, NV} = case proplists:get_value(family, OPT) of
-				%% Unkown UserAget
-				undefined ->
-					{undefined,{undefined, proplists:get_value(undefined, State#state.browsers, 0)+1}};
-				K ->
-					{K, {K, proplists:get_value(K, State#state.browsers,  0) +1}}
-			end,
-			case lists:keytake(Key, 1, State#state.browsers) of
-				false ->
-					State#state{browsers = [NV|State#state.browsers]};
-				{value, _Tuple, TL} ->
-				    State#state{browsers = [NV|TL]}
-			end
+%% [{browser,[{name,<<"Chrome">>},
+%%            {family,chrome},
+%%            {type,web},
+%%            {manufacturer,google},
+%%            {engine,webkit}]},
+%%  {os,[{name,<<"Windows 7">>},
+%%       {family,windows},
+%%       {type,computer},
+%%       {manufacturer,microsoft}]},
+%%  {string,<<"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/"...>>}]
+		[{browser, OPT},{os, OSList}|_] ->
+			NS = browser_info(OPT, State),
+            NS2 = browser_name(OSList, NS),
+            browser_device(OSList, NS2)
+  
 	end.
 					
 		
@@ -208,3 +240,50 @@ to_l(Bin) when is_binary(Bin) ->
 	binary_to_list(Bin);
 to_l(Any) ->
 	Any. 
+
+browser_info( OPT, State ) ->
+    {Key, NV} = case proplists:get_value(family, OPT) of
+         %% Unkown UserAget
+         undefined ->
+             {undefined,{undefined, proplists:get_value(undefined, State#state.browsers, 0)+1}};
+         K ->
+            {K, {K, proplists:get_value(K, State#state.browsers,  0) +1}}
+            end,
+   case lists:keytake(Key, 1, State#state.browsers) of
+                false ->
+                    State#state{browsers = [NV|State#state.browsers]};
+                {value, _Tuple, TL} ->
+                    State#state{browsers = [NV|TL]}
+  end.
+
+
+browser_name(OPT, NS) ->
+            {Key, NV} = case proplists:get_value(name, OPT) of
+                %% Unkown UserAget
+                undefined ->
+                    {undefined,{undefined, proplists:get_value(undefined, NS#state.type, 0)+1}};
+                K ->
+                    {K, {K, proplists:get_value(K, NS#state.type,  0) +1}}
+            end,
+            case lists:keytake(Key, 1, NS#state.type) of
+                false ->
+                    NS#state{type = [NV|NS#state.type]};
+                {value, _Tuple, TL} ->
+                    NS#state{type = [NV|TL]}
+            end.          
+
+
+browser_device(OPT, NS) ->
+            {Key, NV} = case proplists:get_value(type, OPT) of
+                %% Unkown UserAget
+                undefined ->
+                    {undefined,{undefined, proplists:get_value(undefined, NS#state.os, 0)+1}};
+                K ->
+                    {K, {K, proplists:get_value(K, NS#state.os,  0) +1}}
+            end,
+            case lists:keytake(Key, 1, NS#state.os) of
+                false ->
+                    NS#state{os = [NV|NS#state.os]};
+                {value, _Tuple, TL} ->
+                    NS#state{os = [NV|TL]}
+            end.     

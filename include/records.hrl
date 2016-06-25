@@ -17,3 +17,18 @@
 -record(element_ua, {?ELEMENT_BASE(element_user_agent),
 					 browsers=[]
 					 }).
+
+
+-record(element_os, {?ELEMENT_BASE(element_os),
+                     operating_system=[]
+                     }).
+
+
+-record(element_dt, {?ELEMENT_BASE(element_device_type),
+                     field=[]
+                     }).
+
+
+-record(element_connected, {?ELEMENT_BASE(element_currently_connected),
+                     field=[]
+                     }).
